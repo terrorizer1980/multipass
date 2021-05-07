@@ -18,6 +18,7 @@
 #ifndef MULTIPASS_PLATFORM_H
 #define MULTIPASS_PLATFORM_H
 
+#include <multipass/cli/alias_definition.h>
 #include <multipass/days.h>
 #include <multipass/logging/logger.h>
 #include <multipass/network_interface_info.h>
@@ -57,6 +58,8 @@ public:
     virtual bool link(const char* target, const char* link);
     virtual bool symlink(const char* target, const char* link, bool is_dir);
     virtual int utime(const char* path, int atime, int mtime);
+    virtual void create_alias_script(const std::string& alias, const AliasDefinition& def);
+    virtual void remove_alias_script(const std::string& alias);
 };
 
 std::map<QString, QString> extra_settings_defaults();
