@@ -167,7 +167,7 @@ QDir get_aliases_folder()
     }
     else
     {
-        QString location = MP_STDPATHS.writableLocation(mp::StandardPaths::HomeLocation) + "/.local/bin";
+        QString location = MP_STDPATHS.writableLocation(mp::StandardPaths::AppLocalDataLocation) + "/bin";
         aliases_folder = QDir{location};
     }
 
