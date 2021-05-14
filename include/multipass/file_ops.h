@@ -36,11 +36,13 @@ public:
 
     // QDir operations
     virtual bool isReadable(QDir& dir);
-    virtual bool rmdir(QDir& dir, const QString& dirName);
     virtual bool mkpath(QDir& dir, const QString& dirName);
+    virtual bool rmdir(QDir& dir, const QString& dirName);
 
     // QFile operations
+    virtual bool exists(QFile& file);
     virtual bool open(QFile& file, QIODevice::OpenMode mode);
+    virtual QFileDevice::Permissions permissions(const QFile& file);
     virtual qint64 read(QFile& file, char* data, qint64 maxSize);
     virtual bool remove(QFile& file);
     virtual bool rename(QFile& file, const QString& newName);
@@ -49,7 +51,6 @@ public:
     virtual bool setPermissions(QFile& file, QFileDevice::Permissions permissions);
     virtual qint64 write(QFile& file, const char* data, qint64 maxSize);
     virtual qint64 write(QFile& file, const QByteArray& data);
-    virtual bool exists(QFile& file);
 };
 } // namespace multipass
 
