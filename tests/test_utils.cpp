@@ -195,7 +195,7 @@ TEST(Utils, make_file_with_content_works)
     mpt::TempDir temp_dir;
     QString file_name = temp_dir.path() + "/test-file";
 
-    EXPECT_NO_THROW(mp::utils::make_file_with_content(file_name.toStdString(), file_contents));
+    EXPECT_NO_THROW(MP_UTILS.make_file_with_content(file_name.toStdString(), file_contents));
 
     QFile checked_file(file_name);
     check_file_contents(checked_file, file_contents);
@@ -206,13 +206,13 @@ TEST(Utils, make_file_with_content_does_not_overwrite)
     mpt::TempDir temp_dir;
     QString file_name = temp_dir.path() + "/test-file";
 
-    EXPECT_NO_THROW(mp::utils::make_file_with_content(file_name.toStdString(), file_contents));
+    EXPECT_NO_THROW(MP_UTILS.make_file_with_content(file_name.toStdString(), file_contents));
 
     QFile checked_file(file_name);
     check_file_contents(checked_file, file_contents);
 
-    MP_EXPECT_THROW_THAT(mp::utils::make_file_with_content(file_name.toStdString(), "other stuff\n"),
-                         std::runtime_error, mpt::match_what(HasSubstr("already exists")));
+    MP_EXPECT_THROW_THAT(MP_UTILS.make_file_with_content(file_name.toStdString(), "other stuff\n"), std::runtime_error,
+                         mpt::match_what(HasSubstr("already exists")));
 
     check_file_contents(checked_file, file_contents);
 }
@@ -222,7 +222,7 @@ TEST(Utils, make_file_with_content_creates_path)
     mpt::TempDir temp_dir;
     QString file_name = temp_dir.path() + "/new_dir/test-file";
 
-    EXPECT_NO_THROW(mp::utils::make_file_with_content(file_name.toStdString(), file_contents));
+    EXPECT_NO_THROW(MP_UTILS.make_file_with_content(file_name.toStdString(), file_contents));
 
     QFile checked_file(file_name);
     check_file_contents(checked_file, file_contents);
@@ -237,7 +237,7 @@ TEST(Utils, make_file_with_content_fails_if_path_cannot_be_created)
     EXPECT_CALL(*mock_file_ops, exists(_)).WillOnce(Return(false));
     EXPECT_CALL(*mock_file_ops, mkpath(_, _)).WillOnce(Return(false));
 
-    MP_EXPECT_THROW_THAT(mp::utils::make_file_with_content(file_name, file_contents), std::runtime_error,
+    MP_EXPECT_THROW_THAT(MP_UTILS.make_file_with_content(file_name, file_contents), std::runtime_error,
                          mpt::match_what(HasSubstr("failed to create dir")));
 }
 
@@ -251,7 +251,7 @@ TEST(Utils, make_file_with_content_fails_if_file_cannot_be_created)
     EXPECT_CALL(*mock_file_ops, mkpath(_, _)).WillOnce(Return(true));
     EXPECT_CALL(*mock_file_ops, open(_, _)).WillOnce(Return(false));
 
-    MP_EXPECT_THROW_THAT(mp::utils::make_file_with_content(file_name, file_contents), std::runtime_error,
+    MP_EXPECT_THROW_THAT(MP_UTILS.make_file_with_content(file_name, file_contents), std::runtime_error,
                          mpt::match_what(HasSubstr("failed to open file")));
 }
 
@@ -266,7 +266,7 @@ TEST(Utils, make_file_with_content_throws_on_write_error)
     EXPECT_CALL(*mock_file_ops, open(_, _)).WillOnce(Return(true));
     EXPECT_CALL(*mock_file_ops, write(_, _, _)).WillOnce(Return(747));
 
-    MP_EXPECT_THROW_THAT(mp::utils::make_file_with_content(file_name, file_contents), std::runtime_error,
+    MP_EXPECT_THROW_THAT(MP_UTILS.make_file_with_content(file_name, file_contents), std::runtime_error,
                          mpt::match_what(HasSubstr("error writing to file")));
 }
 

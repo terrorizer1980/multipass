@@ -32,9 +32,10 @@ public:
     using Utils::Utils;
     MOCK_METHOD1(filesystem_bytes_available, qint64(const QString&));
     MOCK_METHOD1(exit, void(int));
+    MOCK_METHOD2(make_file_with_content, void(const std::string&, const std::string&));
     MOCK_METHOD3(wait_for_cloud_init, void(VirtualMachine*, std::chrono::milliseconds, const SSHKeyProvider&));
 
     MP_MOCK_SINGLETON_BOILERPLATE(::testing::NiceMock<MockUtils>, Utils);
 };
 } // namespace multipass::test
-#endif // MULTIPASS_MOCK_UTILS_FUNCTIONS_H
+#endif // MULTIPASS_MOCK_UTILS_H
