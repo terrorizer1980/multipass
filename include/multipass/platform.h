@@ -32,6 +32,7 @@
 
 #include <libssh/sftp.h>
 
+#include <QDir>
 #include <QString>
 
 #include <functional>
@@ -58,6 +59,7 @@ public:
     virtual bool link(const char* target, const char* link);
     virtual bool symlink(const char* target, const char* link, bool is_dir);
     virtual int utime(const char* path, int atime, int mtime);
+    virtual QDir get_alias_scripts_folder();
     virtual void create_alias_script(const std::string& alias, const AliasDefinition& def);
     virtual void remove_alias_script(const std::string& alias);
 };
