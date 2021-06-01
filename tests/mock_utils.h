@@ -30,9 +30,9 @@ class MockUtils : public Utils
 {
 public:
     using Utils::Utils;
-    MOCK_METHOD1(filesystem_bytes_available, qint64(const QString&));
+    MOCK_CONST_METHOD1(filesystem_bytes_available, qint64(const QString&));
     MOCK_METHOD1(exit, void(int));
-    MOCK_METHOD3(wait_for_cloud_init, void(VirtualMachine*, std::chrono::milliseconds, const SSHKeyProvider&));
+    MOCK_CONST_METHOD3(wait_for_cloud_init, void(VirtualMachine*, std::chrono::milliseconds, const SSHKeyProvider&));
 
     MP_MOCK_SINGLETON_BOILERPLATE(MockUtils, Utils);
 };
