@@ -115,7 +115,7 @@ TEST_F(LXDBackend, creates_project_storage_pool_and_network_on_healthcheck)
 
             if (op == "GET")
             {
-                if ((url.contains("1.0/projects/multipass") || url.contains("1.0/storage_pools") ||
+                if ((url.contains("1.0/projects/multipass") || url.contains("1.0/storage-pools") ||
                      url.contains("1.0/networks/mpbr0")))
                 {
                     return new mpt::MockLocalSocketReply(mpt::not_found_data, QNetworkReply::ContentNotFoundError);
@@ -172,7 +172,7 @@ TEST_F(LXDBackend, creates_project_storage_pool_and_network_on_healthcheck)
     EXPECT_TRUE(network_created);
 }
 
-TEST_F(LXDBackend, uses_default_storage_pool_when_it_exists)
+TEST_F(LXDBackend, uses_default_storage_pool_when_it_exists_and_no_multipass_pool)
 {
     EXPECT_CALL(*mock_network_access_manager, createRequest(_, _, _))
         .WillRepeatedly([](auto, auto request, auto outgoingData) {
@@ -183,16 +183,14 @@ TEST_F(LXDBackend, uses_default_storage_pool_when_it_exists)
 
             if (op == "GET")
             {
-                if (url.contains("1.0/storage-pools"))
+                if (url.contains("1.0/storage-pools/default"))
                 {
                     const QByteArray storage_pool_data{"{"
                                                        "\"error\": \"\","
                                                        "\"error_code\": 0,"
-                                                       "\"metadata\": ["
-                                                       "  {"
+                                                       "\"metadata\": {"
                                                        "    \"name\": \"default\""
-                                                       "  }"
-                                                       "],"
+                                                       "},"
                                                        "\"operation\": \"\","
                                                        "\"status\": \"Success\","
                                                        "\"status_code\": 200,"
@@ -200,6 +198,10 @@ TEST_F(LXDBackend, uses_default_storage_pool_when_it_exists)
                                                        "}"};
 
                     return new mpt::MockLocalSocketReply(storage_pool_data);
+                }
+                else if (url.contains("1.0/storage-pools/multipass"))
+                {
+                    return new mpt::MockLocalSocketReply(mpt::not_found_data, QNetworkReply::ContentNotFoundError);
                 }
                 else if (url.contains("1.0"))
                 {
@@ -221,7 +223,7 @@ TEST_F(LXDBackend, uses_default_storage_pool_when_it_exists)
     backend.hypervisor_health_check();
 }
 
-TEST_F(LXDBackend, uses_multipass_storage_pool_when_it_exists_and_no_default)
+TEST_F(LXDBackend, uses_multipass_storage_pool_when_it_exists)
 {
     EXPECT_CALL(*mock_network_access_manager, createRequest(_, _, _))
         .WillRepeatedly([](auto, auto request, auto outgoingData) {
@@ -232,16 +234,14 @@ TEST_F(LXDBackend, uses_multipass_storage_pool_when_it_exists_and_no_default)
 
             if (op == "GET")
             {
-                if (url.contains("1.0/storage-pools"))
+                if (url.contains("1.0/storage-pools/multipass"))
                 {
                     const QByteArray storage_pool_data{"{"
                                                        "\"error\": \"\","
                                                        "\"error_code\": 0,"
-                                                       "\"metadata\": ["
-                                                       "  {"
+                                                       "\"metadata\": {"
                                                        "    \"name\": \"multipass\""
-                                                       "  }"
-                                                       "],"
+                                                       "},"
                                                        "\"operation\": \"\","
                                                        "\"status\": \"Success\","
                                                        "\"status_code\": 200,"
@@ -249,6 +249,10 @@ TEST_F(LXDBackend, uses_multipass_storage_pool_when_it_exists_and_no_default)
                                                        "}"};
 
                     return new mpt::MockLocalSocketReply(storage_pool_data);
+                }
+                else if (url.contains("1.0/storage-pools/default"))
+                {
+                    return new mpt::MockLocalSocketReply(mpt::not_found_data, QNetworkReply::ContentNotFoundError);
                 }
                 else if (url.contains("1.0"))
                 {
