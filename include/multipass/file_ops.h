@@ -37,11 +37,11 @@ public:
 
     // QDir operations
     virtual bool isReadable(QDir& dir);
-    virtual bool mkpath(QDir& dir, const QString& dirName);
+    virtual bool mkpath(const QDir& dir, const QString& dirName);
     virtual bool rmdir(QDir& dir, const QString& dirName);
 
     // QFile operations
-    virtual bool exists(QFile& file);
+    virtual bool exists(const QFile& file);
     virtual bool is_open(const QFile& file) const;
     virtual bool open(QFile& file, QIODevice::OpenMode mode);
     virtual QFileDevice::Permissions permissions(const QFile& file);

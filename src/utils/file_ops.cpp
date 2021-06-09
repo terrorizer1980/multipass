@@ -28,7 +28,7 @@ bool mp::FileOps::isReadable(QDir& dir)
     return dir.isReadable();
 }
 
-bool mp::FileOps::mkpath(QDir& dir, const QString& dirName)
+bool mp::FileOps::mkpath(const QDir& dir, const QString& dirName)
 {
     return dir.mkpath(dirName);
 }
