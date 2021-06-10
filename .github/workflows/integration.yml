@@ -134,6 +134,7 @@ jobs:
                 _run powershell -noprofile -noninteractive -command ${{ '${{@}}' }}
               }}
 
+              # Install the stable version
               if [ '${{ matrix.os }}' == 'Linux' ]; then
                 OVERRIDE_CONF="/etc/systemd/system/snap.multipass.multipassd.service.d/override.conf"
                 _run sudo mkdir -p $( dirname ${OVERRIDE_CONF} )
@@ -143,14 +144,14 @@ jobs:
               ExecStart=/usr/bin/snap run multipass.multipassd --verbosity trace
               EOF
                 # Give snapd time to settle
-                _retry 5 30 _run sudo snap install multipass --channel ${{ github.event.inputs.snap-channel }}
+                _retry 5 30 _run sudo snap install multipass
 
               elif ${{ startsWith(matrix.os, 'macOS') }}; then
-                _run curl --location --output multipass.pkg ${{ github.event.inputs.mac-package }}
+                _run curl --location --output multipass.pkg https://multipass.run/download/macos
                 _run sudo installer -dumplog -target / -pkg multipass.pkg
 
               elif [ '${{ matrix.os }}' == 'Windows' ]; then
-                _ps "(New-Object System.Net.WebClient).DownloadFile('${{ github.event.inputs.win-package }}', 'multipass-installer.exe')"
+                _ps "(New-Object System.Net.WebClient).DownloadFile('https://multipass.run/download/windows', 'multipass-installer.exe')"
                 _run .\\multipass-installer.exe /S
 
                 _ps "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Hyper-V -All -NoRestart"
@@ -162,6 +163,23 @@ jobs:
                 _run sudo snap connect multipass:lxd lxd
                 _run sudo lxd init --auto
                 _run sudo multipass set local.driver=lxd
+              fi
+
+              # Give multipassd time to settle (#1995)
+              _retry_grep 12 5 "\w,lts\W" _run $MP find
+              sleep 10
+
+              # Upgrade to the version under test
+              if [ '${{ matrix.os }}' == 'Linux' ]; then
+                _run sudo snap refresh multipass --channel ${{ github.event.inputs.snap-channel }}
+
+              elif ${{ startsWith(matrix.os, 'macOS') }}; then
+                _run curl --location --output multipass.pkg ${{ github.event.inputs.mac-package  }}
+                _run sudo installer -dumplog -target / -pkg multipass.pkg
+
+              elif [ '${{ matrix.os }}' == 'Windows' ]; then
+                _ps "(New-Object System.Net.WebClient).DownloadFile('${{ github.event.inputs.win-package  }}', 'multipass-installer.exe')"
+                _run .\\multipass-installer.exe /S
               fi
 
               # Give multipassd time to settle (#1995)
