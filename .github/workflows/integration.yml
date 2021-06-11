@@ -125,6 +125,8 @@ jobs:
               }}
 
               # Log journal entries on bad exit
+              CLEANUP=()
+
               function _exit() {{
                 RC=$?
                 if [ '${{ matrix.os }}' == 'Linux' ]; then
@@ -132,6 +134,7 @@ jobs:
                 elif ${{ startsWith(matrix.os, 'macOS') }}; then
                   [ $RC -eq 0 ] || _run sudo cat /Library/Logs/Multipass/multipassd.log
                 fi
+                [ ${{ '"${{#CLEANUP[@]}}"' }} -eq 0 ] || rm ${{ '"${{CLEANUP[@]}}"' }}
               }}
               trap _exit EXIT
 
@@ -199,6 +202,12 @@ jobs:
               # Give multipassd time to settle (#1995)
               _retry 12 5 _run $MP exec primary -- uname -a
               _run $MP list
+
+              TMPFILE=$( mktemp ~/mp.XXXXXX )
+              CLEANUP+=( "$TMPFILE" )
+
+              _run $MP exec primary stat "Home/$( basename $TMPFILE )"
+
               _run $MP delete --purge --all
 
               _run $MP launch --timeout 1200 --name test
