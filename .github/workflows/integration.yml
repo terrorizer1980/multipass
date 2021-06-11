@@ -178,6 +178,11 @@ jobs:
               _retry_grep 12 5 "\w,lts\W" _run $MP find
               sleep 10
 
+              # Launch primary
+              _retry 36 5 _run $MP start
+
+              _run $MP exec primary -- uname -a
+
               # Upgrade to the version under test
               if [ '${{ matrix.os }}' == 'Linux' ]; then
                 _run sudo snap refresh multipass --channel ${{ github.event.inputs.snap-channel }}
@@ -192,14 +197,13 @@ jobs:
               fi
 
               # Give multipassd time to settle (#1995)
-              _retry_grep 12 5 "\w,lts\W" _run $MP find
-              sleep 10
-
-              _run $MP start --timeout 1200
-
+              _retry 12 5 _run $MP exec primary -- uname -a
               _run $MP list
+              _run $MP delete --purge --all
 
-              _run $MP exec primary -- uname -a
+              _run $MP launch --timeout 1200 --name test
+              _run $MP list
+              _run $MP exec test -- uname -a
 
     - name: Submit the job
       id: submit
